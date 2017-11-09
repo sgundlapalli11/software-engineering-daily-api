@@ -186,7 +186,10 @@ CommentSchema.statics = {
     });
     return commentIds;
   },
-
+  getParentCommentsIds(parentComments) {
+    var commentIds = parentCOmments.map((comment) => { return comment._id });
+    return commentIds;
+  },
   getTopLevelCommentsForItem(postId) {
     return this.find({post: postId, parentComment: null })
       .sort({dateCreated: -1})
