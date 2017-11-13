@@ -102,12 +102,20 @@ function create(req, res, next) {
    const { postId } = req.params;
 
    Comment.getTopLevelCommentsForItem(postId)
-   .then((comments) => {
+   .then((topLevelComments) => {
      // Here we are fetching our nested comments, and need everything to finish
-     let nestedCommentPromises = map(comments, (comment) => {
-       return Comment.fillNestedComments(comment);
-     });
-     return Promise.all(nestedCommentPromises);
+
+     // ***********************************************************************
+
+     //Right now fillNestedComments makes a db call, we are looping through each parent comments
+     // therefore we are making # of parent comments times of db calls
+     // We need to replace this logic by having one db query that gets all the parent comment replies
+     let nestedCommentPromise = Comment.fillNestedComments(topLevelComments);
+
+     return Promise.resolve(nestedCommentPromise);
+
+     // ***********************************************************************
+
    })
    .then((parentComments) => {
      // If authed then fill in if user has liked:
